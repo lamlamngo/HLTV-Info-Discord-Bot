@@ -62,7 +62,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               logger.info(Object.keys(listofteams).length)
               bot.sendMessage({
                   to: channelID,
-                  message: 'Supported commands: ranking + #val, team + #teamName'
+                  message: 'Supported commands: ranking + #val, team + #teamName, player + #playerName'
               });
               break;
             case 'ranking':
@@ -138,9 +138,48 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     })
                   })
                 } else {
+                  bot.sendMessage({
+                    to: channelID,
+                    message: "i only work with teams in top 30 lel"
+                  })
                 }
               }
-            // Just add any case commands if you want to..
+              break;
+          case "player":
+            if (val.toLowerCase() in listofplayers) {
+              HLTV.getPlayer({id: listofplayers[val.toLowerCase()]}).then(res => {
+                var messageReturn = `Name: ${res["name"]} \nAge: ${res["age"]}
+                \nCountry: ${res["country"]["name"]} \nTeam: ${res["team"]["name"]}
+                \nRating: ${res["statistics"]["rating"]} Over ${res["statistics"]["mapsPlayed"]} maps played last 3 months.
+                \nAchievements: `
+
+                var to_go = 0
+                if (res["achievements"].length > 5) {
+                  to_go = 5
+                } else {
+                  to_go = res["achievements"].length
+                }
+
+                for (var i = 0; i < to_go; i++) {
+                  if (i == to_go - 1) {
+                    messageReturn += `${res["achievements"][i]["place"]} at ${res["achievements"][i]["event"]["name"]} \n`
+                  } else {
+                    messageReturn += `${res["achievements"][i]["place"]} at ${res["achievements"][i]["event"]["name"]}, `
+                  }
+                }
+
+                bot.sendMessage({
+                  to: channelID,
+                  message: messageReturn
+                })
+              })
+            } else {
+              bot.sendMessage({
+                to: channelID,
+                message: "no ur mom is not in a top 30 team"
+              })
+            }
+            break;
          }
      }
 });
