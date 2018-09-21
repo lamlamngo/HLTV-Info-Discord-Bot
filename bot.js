@@ -45,7 +45,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         } else if (args.length == 1) {
           cmd = args[0]
         } else if (args.length == 3) {
-          val = args[1] + " " + args[2]
+          cmd = args[0]
+          val = `${args[1]} ${args[2]}`
         }
 
         args = args.splice(1);
