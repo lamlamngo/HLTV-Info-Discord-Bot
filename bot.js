@@ -5,13 +5,20 @@ var logger = require('winston');
 var auth = require('./auth.json');
 
 var listofteams = {}
+var listofplayers = {}
 
 HLTV.getTeamRanking().then(res => {
   for (var i = 0; i < res.length; i++) {
     listofteams[res[i]["team"]["name"].toLowerCase()] = res[i]["team"]["id"]
+    HLTV.getTeam({id: res[i]["team"]["id"]}).then(res_1 => {
+      for (var j = 0; j < res_1["players"].length; j++) {
+        listofplayers[res_1["players"][j]["name"].toLowerCase()] = res_1["players"][j]["id"]
+      }
+    })
   }
-
 })
+
+
 logger.level = 'debug';
 // Initialize Discord Bot
 var bot = new Discord.Client({
