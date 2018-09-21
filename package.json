@@ -1,0 +1,14 @@
+{
+  "name": "HLTVBot",
+  "version": "1.0.0",
+  "description": "dm binh minh",
+  "main": "bot.js",
+  "author": "Lam Ngo",
+  "dependencies": {
+    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "express": "^4.16.3",
+    "hltv": "^2.8.2",
+    "hltv-api": "^1.3.4",
+    "winston": "^3.1.0"
+  }
+}
