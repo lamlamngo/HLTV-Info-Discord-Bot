@@ -192,37 +192,32 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             break;
         case "watch":
          try {
-           HLTV.connectToScorebot({id: "2326808", onScoreboardUpdate: (data) => {
+           HLTV.connectToScorebot({id: val, onScoreboardUpdate: (data) => {
            }, onLogUpdate: (data) => {
              if (update) {
                var messageToSend = ""
-
-               if ("RoundStart" in data) {
+               if (data["log"][data["log"].length-1]["RoundStart"]) {
                  messageToSend += "Round just started. \n"
                }
 
-               if ("Kill" in data) {
-                 if (data["Kill"]["headShot"]) {
-                   messageToSend += `${data["Kill"]["killerName"]} (${data["Kill"]["killerSide"]})
-                   just killed ${data["Kill"]["victimName"]} with ${data["Kill"]["weapon"]} (HEADSHOT) \n`
+               if (data["log"][data["log"].length-1]["Kill"]) {
+                 if (data["log"][data["log"].length-1]["Kill"]["headShot"]) {
+                   messageToSend += `${data["log"][data["log"].length-1]["Kill"]["killerName"]} (${data["log"][data["log"].length-1]["Kill"]["killerSide"]}) just killed ${data["log"][data["log"].length-1]["Kill"]["victimName"]} with ${data["log"][data["log"].length-1]["Kill"]["weapon"]} (HEADSHOT) \n`
                  } else {
-                   messageToSend += `${data["Kill"]["killerName"]} (${data["Kill"]["killerSide"]})
-                   just killed ${data["Kill"]["victimName"]} with ${data["Kill"]["weapon"]}\n`
+                   messageToSend += `${data["log"][data["log"].length-1]["Kill"]["killerName"]} (${data["log"][data["log"].length-1]["Kill"]["killerSide"]}) just killed ${data["log"][data["log"].length-1]["Kill"]["victimName"]} with ${data["log"][data["log"].length-1]["Kill"]["weapon"]}\n`
                  }
                }
 
-               if ("BombPlanted" in data) {
-                 messageToSend += `${data["BombPlanted"]["playerName"]} just planted the bomb
-                 in a ${data["BombPlanted"]["tPlayers"]} (T) vs ${data["BombPlanted"]["ctPlayers"]} (CT) situation, \n`
+               if (data["log"][data["log"].length-1]["BombPlanted"]) {
+                 messageToSend += `${data["log"][data["log"].length-1]["BombPlanted"]["playerName"]} just planted the bomb in a ${data["log"][data["log"].length-1]["BombPlanted"]["tPlayers"]} (T) vs ${data["log"][data["log"].length-1]["BombPlanted"]["ctPlayers"]} (CT) situation, \n`
                }
 
-               if ("BombDefused" in data) {
-                 messageToSend += `${data["BombDefused"]["playerName"]} just defused the bomb. \n`
+               if (data["log"][data["log"].length-1]["BombDefused"]) {
+                 messageToSend += `${data["log"][data["log"].length-1]["BombDefused"]["playerName"]} just defused the bomb. \n`
                }
 
-               if ("RoundEnd" in data) {
-                 messageToSend += `Round just ended. \nWinner: ${data["RoundEnd"]["winner"]} \nWin By: ${data["RoundEnd"]["winType"]}
-                 \nScore: CT ${data["RoundEnd"]["counterTerroristScore"]} vs T ${data["RoundEnd"][terroristScore]} \n`
+               if (data["log"][data["log"].length-1]["RoundEnd"]) {
+                 messageToSend += `Round just ended. \nWinner: ${data["log"][data["log"].length-1]["RoundEnd"]["winner"]} \nWin By: ${data["log"][data["log"].length-1]["RoundEnd"]["winType"]} \nScore: CT ${data["log"][data["log"].length-1]["RoundEnd"]["counterTerroristScore"]} vs T ${data["log"][data["log"].length-1]["RoundEnd"]["terroristScore"]} \n`
                }
 
                bot.sendMessage({
