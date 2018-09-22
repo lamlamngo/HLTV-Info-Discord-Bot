@@ -130,12 +130,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                     if (res["bigAchievements"].length > 0) {
                       message_return += "Recent achievements: "
-                      var to_go = 0
-                      if (res["bigAchievements"].length > 5) {
-                        to_go = 5
-                      } else {
-                        to_go = res["bigAchievements"].length
-                      }
+                      var to_go = res["bigAchievements"].length > 5 ? 5: res["bigAchievements"].length
 
                       logger.info(to_go)
 
@@ -169,12 +164,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 \nRating: ${res["statistics"]["rating"]} Over ${res["statistics"]["mapsPlayed"]} maps played last 3 months.
                 \nAchievements: `
 
-                var to_go = 0
-                if (res["achievements"].length > 5) {
-                  to_go = 5
-                } else {
-                  to_go = res["achievements"].length
-                }
+                var to_go = res["achievements"].length > 5 ? 5: res["achievements"].length
 
                 for (var i = 0; i < to_go; i++) {
                   if (i == to_go - 1) {
