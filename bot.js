@@ -196,22 +196,27 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                }
 
                if ("Kill" in data) {
-                 messageToSend += `${messageToSend["Kill"]["killerName"]} (${messageToSend["Kill"]["killerSide"]})
-                 just killed ${messageToSend["Kill"]["victimName"]} with ${messageToSend["Kill"]["weapon"]} \n`
+                 if (data["Kill"]["headShot"]) {
+                   messageToSend += `${data["Kill"]["killerName"]} (${data["Kill"]["killerSide"]})
+                   just killed ${data["Kill"]["victimName"]} with ${data["Kill"]["weapon"]} (HEADSHOT) \n`
+                 } else {
+                   messageToSend += `${data["Kill"]["killerName"]} (${data["Kill"]["killerSide"]})
+                   just killed ${data["Kill"]["victimName"]} with ${data["Kill"]["weapon"]}\n`
+                 }
                }
 
                if ("BombPlanted" in data) {
-                 messageToSend += `${messageToSend["BombPlanted"]["playerName"]} just planted the bomb
-                 in a ${messageToSend["BombPlanted"]["tPlayers"]} (T) vs ${messageToSend["BombPlanted"]["ctPlayers"]} (CT) situation, \n`
+                 messageToSend += `${data["BombPlanted"]["playerName"]} just planted the bomb
+                 in a ${data["BombPlanted"]["tPlayers"]} (T) vs ${data["BombPlanted"]["ctPlayers"]} (CT) situation, \n`
                }
 
                if ("BombDefused" in data) {
-                 messageToSend += `${messageToSend["BombDefused"]["playerName"]} just defused the bomb. \n`
+                 messageToSend += `${data["BombDefused"]["playerName"]} just defused the bomb. \n`
                }
 
                if ("RoundEnd" in data) {
-                 messageToSend += `Round just ended. \nWinner: ${messageToSend["RoundEnd"]["winner"]} \nWin By: ${messageToSend["RoundEnd"]["winType"]}
-                 \nScore: CT ${messageToSend["RoundEnd"]["counterTerroristScore"]} vs T ${messageToSend["RoundEnd"][terroristScore]} \n`
+                 messageToSend += `Round just ended. \nWinner: ${data["RoundEnd"]["winner"]} \nWin By: ${data["RoundEnd"]["winType"]}
+                 \nScore: CT ${data["RoundEnd"]["counterTerroristScore"]} vs T ${data["RoundEnd"][terroristScore]} \n`
                }
 
                bot.sendMessage({
@@ -225,6 +230,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                message: "Connected"
              })
              update = true
+           }, onDisconnect: (data) => {
+             if (update) {
+               bot.sendMessage({
+                 to: channelID,
+                 message: "Ended"
+               })
+             }
            }})
          } catch(e) {
            logger.info("CAUGHT")
