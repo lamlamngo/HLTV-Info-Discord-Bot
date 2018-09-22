@@ -62,14 +62,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'ping':
                 bot.sendMessage({
                     to: channelID,
-                    message: 'Pong!'
+                    message: "`Pong!`"
                 });
                 break;
             case 'supported':
               logger.info(Object.keys(listofteams).length)
               bot.sendMessage({
                   to: channelID,
-                  message: 'Supported commands:\n1. !!ranking + #val.\n2. !!team + #teamName.\n3. player + #playerName.\n4. !!matchByTeam + #teamName.\n5. !!watch + #matchID.\n6. !!stop + #matchID'
+                  message: "```" + 'Supported commands:\n1. !!ranking + #val.\n2. !!team + #teamName.\n3. player + #playerName.\n4. !!matchByTeam + #teamName.\n5. !!watch + #matchID.\n6. !!stop + #matchID' + "```"
               });
               break;
             case 'ranking':
@@ -79,7 +79,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   if (val == "") {
                     bot.sendMessage({
                       to: channelID,
-                      message: "enter a number yo"
+                      message: "```" + "enter a number yo" + "```"
                     })
                   } else {
                     var integer = parseInt(val, 10);
@@ -94,7 +94,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                     bot.sendMessage({
                       to: channelID,
-                      message: message_rank
+                      message: "```" + message_rank + "```"
                     })
                   }
 
@@ -103,14 +103,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'best':
             bot.sendMessage({
               to: channelID,
-              message: "Lam chu con ai nua"
+              message: "```" + "Lam chu con ai nua" + "```"
             })
             break;
             case 'team':
               if (val == "") {
                 bot.sendMessage({
                   to: channelID,
-                  message: "enter a name yo"
+                  message: "```" + "enter a name yo" + "```"
                 })
               } else {
                 if (val.toLowerCase() in listofteams) {
@@ -150,13 +150,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                     bot.sendMessage({
                       to: channelID,
-                      message: message_return
+                      message: "```" + message_return + "```"
                     })
                   })
                 } else {
                   bot.sendMessage({
                     to: channelID,
-                    message: "i only work with teams in top 30 lel"
+                    message: "```" + "i only work with teams in top 30 lel" + "```"
                   })
                 }
               }
@@ -186,13 +186,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                 bot.sendMessage({
                   to: channelID,
-                  message: messageReturn
+                  message: "```" + messageReturn + "```"
                 })
               })
             } else {
               bot.sendMessage({
                 to: channelID,
-                message: "no ur mom is not in a top 30 team"
+                message: "```" + "no ur mom is not in a top 30 team" + "```"
               })
             }
             break;
@@ -201,13 +201,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
            if (update[val]) {
              bot.sendMessage({
                to: channelID,
-               message: `Match ${val} is already on`
+               message: "```"+ `Match ${val} is already on`+"```"
              })
            } else {
              update[val] = true
              bot.sendMessage({
                to: channelID,
-               message: "Resuming match " + val
+               message: "```"+ "Resuming match " + val + "```"
              })
            }
          } else {
@@ -244,13 +244,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                bot.sendMessage({
                  to: channelID,
-                 message: messageToSend
+                 message: "```" + messageToSend + "```"
                })
              }
            }, onConnect: (id) => {
              bot.sendMessage({
                to: channelID,
-               message: "Connected"
+               message: "```" + "Connected to match " + id + "```"
              })
              update[id] = true
              logger.info(update)
@@ -258,7 +258,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
              if (update[id]) {
                bot.sendMessage({
                  to: channelID,
-                 message: "Ended"
+                 message: "```" + "Ended match " + id + "```"
                })
              }
 
@@ -275,7 +275,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             update[val] = false
             bot.sendMessage({
               to: channelID,
-              message: `Stop match ${val}`
+              message: "```"+ `Stop match ${val}` + "```"
             })
           }
 
@@ -312,12 +312,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
           if (val != "") {
             bot.sendMessage({
               to: channelID,
-              message: messageToSend
+              message: "```" + messageToSend + "```"
             })
           } else {
             bot.sendMessage({
               to: channelID,
-              message: `There is no live or upcoming games for ${val}`
+              message: "```"+ `There is no live or upcoming games for ${val}` + "```"
             })
           }
         })
