@@ -231,6 +231,48 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         case "stop":
           update = false
           break;
+        case "matchByTeam":
+        HLTV.getMatches().then((res) => {
+          var messageToSend = ""
+          for (var i = 0; i < res.length; i++){
+            if (res[i]["team1"]) {
+              if (res[i]["team1"]["name"].toLowerCase() == val) {
+                if (res[i]["live"]) {
+                    messageToSend += `${val} has a live game vs ${res[i]["team2"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
+                } else {
+                  messageToSend += `${val} has an upcoming game vs ${res[i]["team2"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
+                }
+
+                i = res.length
+              }
+            }
+
+          if (res[i]["team2"]) {
+            if (res[i]["team2"]["name"].toLowerCase() == val) {
+              if (res[i]["live"]) {
+                  messageToSend += `${val} has a live game vs ${res[i]["team1"]["name"]} at ${res[i]["event"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
+              } else {
+                messageToSend += `${val} has an upcoming game vs ${res[i]["team1"]["name"]} at ${res[i]["event"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers when it goes live.`
+              }
+
+              i = res.length
+            }
+        }
+          }
+
+          if (val != "") {
+            bot.sendMessage({
+              to: channelID,
+              message: messageToSend
+            })
+          } else {
+            bot.sendMessage({
+              to: channelID,
+              message: `There is no live or upcoming games for ${val}`
+            })
+          }
+        })
+        break;
          }
      }
 });
