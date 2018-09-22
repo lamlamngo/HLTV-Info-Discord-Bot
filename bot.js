@@ -51,7 +51,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         }
 
         args = args.splice(1);
-        switch(cmd) {
+        switch(cmd.toLowerCase()) {
             // !ping
             case 'ping':
                 bot.sendMessage({
@@ -63,7 +63,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               logger.info(Object.keys(listofteams).length)
               bot.sendMessage({
                   to: channelID,
-                  message: 'Supported commands: ranking + #val, team + #teamName, player + #playerName'
+                  message: 'Supported commands:\n1. !!ranking + #val.\n2. !!team + #teamName.\n3. player + #playerName.\n4. !!matchByTeam + #teamName.\n5. !!watch + #matchID.\n6. !!stop'
               });
               break;
             case 'ranking':
@@ -78,6 +78,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                   } else {
                     var integer = parseInt(val, 10);
 
+                    if (integer > 30) {
+                      integer = 30
+                    }
                     for (var i = 0; i < val; i++) {
                       // message_rank += "Rank " + res[i]["place"] + ": " + res[i]["team"]["name"] + ", " + res[i]["points"] + ", team ID: " + res[i]["team"]["id"]
                       message_rank += `Rank ${res[i]["place"]}: ${res[i]["team"]["name"]}, ${res[i]["points"]}, team ID: ${res[i]["team"]["id"]} \n`
@@ -231,7 +234,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         case "stop":
           update = false
           break;
-        case "matchByTeam":
+        case "matchbyteam":
         HLTV.getMatches().then((res) => {
           var messageToSend = ""
           for (var i = 0; i < res.length; i++){
@@ -245,9 +248,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                 i = res.length
               }
-            }
+          }
 
-          if (res[i]["team2"]) {
+          if (i < res.length && res[i]["team2"]) {
             if (res[i]["team2"]["name"].toLowerCase() == val) {
               if (res[i]["live"]) {
                   messageToSend += `${val} has a live game vs ${res[i]["team1"]["name"]} at ${res[i]["event"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
