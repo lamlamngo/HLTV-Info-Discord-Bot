@@ -6,7 +6,7 @@ var auth = require('./auth.json');
 
 var listofteams = {}
 var listofplayers = {}
-var update = false
+var update = {}
 
 HLTV.getTeamRanking().then(res => {
   for (var i = 0; i < res.length; i++) {
@@ -35,7 +35,7 @@ bot.on('ready', function (evt) {
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (user == "f0restwOw~") {
+    if (user == "Dawn") {
       bot.sendMessage({
           to: channelID,
           message: "I DON'T LISTEN TO COMMAND FROM MR. VO XUAN BINH MINH"
@@ -69,7 +69,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               logger.info(Object.keys(listofteams).length)
               bot.sendMessage({
                   to: channelID,
-                  message: 'Supported commands:\n1. !!ranking + #val.\n2. !!team + #teamName.\n3. player + #playerName.\n4. !!matchByTeam + #teamName.\n5. !!watch + #matchID.\n6. !!stop'
+                  message: 'Supported commands:\n1. !!ranking + #val.\n2. !!team + #teamName.\n3. player + #playerName.\n4. !!matchByTeam + #teamName.\n5. !!watch + #matchID.\n6. !!stop + #matchID'
               });
               break;
             case 'ranking':
@@ -100,6 +100,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                 })
                 break;
+            case 'best':
+            bot.sendMessage({
+              to: channelID,
+              message: "Lam chu con ai nua"
+            })
+            break;
             case 'team':
               if (val == "") {
                 bot.sendMessage({
@@ -191,11 +197,27 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             }
             break;
         case "watch":
+         if (val in update) {
+           if (update[val]) {
+             bot.sendMessage({
+               to: channelID,
+               message: `Match ${val} is already on`
+             })
+           } else {
+             update[val] = true
+             bot.sendMessage({
+               to: channelID,
+               message: "Resuming match " + val
+             })
+           }
+         } else {
          try {
            HLTV.connectToScorebot({id: val, onScoreboardUpdate: (data) => {
-           }, onLogUpdate: (data) => {
-             if (update) {
-               var messageToSend = ""
+           }, onLogUpdate: (data, id) => {
+             logger.info(id)
+             logger.info(update)
+             if (update[id]) {
+               var messageToSend = `Match ${id}: `
                if (data["log"][data["log"].length-1]["RoundStart"]) {
                  messageToSend += "Round just started. \n"
                }
@@ -225,34 +247,45 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                  message: messageToSend
                })
              }
-           }, onConnect: (data) => {
+           }, onConnect: (id) => {
              bot.sendMessage({
                to: channelID,
                message: "Connected"
              })
-             update = true
-           }, onDisconnect: (data) => {
-             if (update) {
+             update[id] = true
+             logger.info(update)
+           }, onDisconnect: (id) => {
+             if (update[id]) {
                bot.sendMessage({
                  to: channelID,
                  message: "Ended"
                })
              }
+
+             update[id] = false
+
            }})
          } catch(e) {
            logger.info("CAUGHT")
   // expected output: "Parameter is not a number!"
-        }
+}}
           break;
         case "stop":
-          update = false
+          if (update[val]) {
+            update[val] = false
+            bot.sendMessage({
+              to: channelID,
+              message: `Stop match ${val}`
+            })
+          }
+
           break;
         case "matchbyteam":
         HLTV.getMatches().then((res) => {
           var messageToSend = ""
           for (var i = 0; i < res.length; i++){
             if (res[i]["team1"]) {
-              if (res[i]["team1"]["name"].toLowerCase() == val) {
+              if (res[i]["team1"]["name"].toLowerCase() == val.toLowerCase()) {
                 if (res[i]["live"]) {
                     messageToSend += `${val} has a live game vs ${res[i]["team2"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
                 } else {
@@ -264,7 +297,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
           }
 
           if (i < res.length && res[i]["team2"]) {
-            if (res[i]["team2"]["name"].toLowerCase() == val) {
+            if (res[i]["team2"]["name"].toLowerCase() == val.toLowerCase()) {
               if (res[i]["live"]) {
                   messageToSend += `${val} has a live game vs ${res[i]["team1"]["name"]} at ${res[i]["event"]["name"]}.\nType !!watch ${res[i]["id"]} to listen to live tickers.`
               } else {
