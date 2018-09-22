@@ -6,6 +6,7 @@ var auth = require('./auth.json');
 
 var listofteams = {}
 var listofplayers = {}
+var update = false
 
 HLTV.getTeamRanking().then(res => {
   for (var i = 0; i < res.length; i++) {
@@ -180,6 +181,56 @@ bot.on('message', function (user, userID, channelID, message, evt) {
               })
             }
             break;
+        case "watch":
+         try {
+           HLTV.connectToScorebot({id: "2326808", onScoreboardUpdate: (data) => {
+           }, onLogUpdate: (data) => {
+             if (update) {
+               var messageToSend = ""
+
+               if ("RoundStart" in data) {
+                 messageToSend += "Round just started. \n"
+               }
+
+               if ("Kill" in data) {
+                 messageToSend += `${messageToSend["Kill"]["killerName"]} (${messageToSend["Kill"]["killerSide"]})
+                 just killed ${messageToSend["Kill"]["victimName"]} with ${messageToSend["Kill"]["weapon"]} \n`
+               }
+
+               if ("BombPlanted" in data) {
+                 messageToSend += `${messageToSend["BombPlanted"]["playerName"]} just planted the bomb
+                 in a ${messageToSend["BombPlanted"]["tPlayers"]} (T) vs ${messageToSend["BombPlanted"]["ctPlayers"]} (CT) situation, \n`
+               }
+
+               if ("BombDefused" in data) {
+                 messageToSend += `${messageToSend["BombDefused"]["playerName"]} just defused the bomb. \n`
+               }
+
+               if ("RoundEnd" in data) {
+                 messageToSend += `Round just ended. \nWinner: ${messageToSend["RoundEnd"]["winner"]} \nWin By: ${messageToSend["RoundEnd"]["winType"]}
+                 \nScore: CT ${messageToSend["RoundEnd"]["counterTerroristScore"]} vs T ${messageToSend["RoundEnd"][terroristScore]} \n`
+               }
+
+               bot.sendMessage({
+                 to: channelID,
+                 message: messageToSend
+               })
+             }
+           }, onConnect: (data) => {
+             bot.sendMessage({
+               to: channelID,
+               message: "Connected"
+             })
+             update = true
+           }})
+         } catch(e) {
+           logger.info("CAUGHT")
+  // expected output: "Parameter is not a number!"
+        }
+          break;
+        case "stop":
+          update = false
+          break;
          }
      }
 });
